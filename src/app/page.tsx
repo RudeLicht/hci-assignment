@@ -53,11 +53,10 @@ export default function HomePage() {
   }, [tab]);
 
   useEffect(() => {
-    // Auto-turn on camera on load if tab is not audio
     setupCamera();
   }, []);
 
-  const handleTabChange = async (t: "video" | "picture" | "audio") => {
+  const handleTabChange = (t: "video" | "picture" | "audio") => {
     setTab(t);
     deleteMedia();
   };
@@ -100,7 +99,7 @@ export default function HomePage() {
       const blob = new Blob(chunks.current, {
         type: tab === "audio" ? "audio/webm" : "video/webm",
       });
-      setMediaFile(new File([blob], `evidence.webm`));
+      setMediaFile(new File([blob], "evidence.webm"));
       setMediaUrl(URL.createObjectURL(blob));
       stream.getTracks().forEach((t) => t.stop());
     };
@@ -133,35 +132,34 @@ export default function HomePage() {
     setMediaUrl(null);
   };
 
-const handleSubmit = async () => {
-  if (!canSubmit || !mediaFile) return;
+  const handleSubmit = async () => {
+    if (!canSubmit || !mediaFile) return;
 
-  const formData = new FormData();
-  formData.append('media', mediaFile);
-  formData.append('type', tab);
-  formData.append('details', details);
-  formData.append('bullyType', bullyType);
-  formData.append('dateTime', dateTime);
-  formData.append('location', location);
-  formData.append('anonymous', anonymous.toString());
-  formData.append('name', name);
+    const formData = new FormData();
+    formData.append("media", mediaFile);
+    formData.append("type", tab);
+    formData.append("details", details);
+    formData.append("bullyType", bullyType);
+    formData.append("dateTime", dateTime);
+    formData.append("location", location);
+    formData.append("anonymous", anonymous.toString());
+    formData.append("name", name);
 
-  const res = await fetch('/api/upload', {
-    method: 'POST',
-    body: formData,
-  });
+    const res = await fetch("/api/upload", {
+      method: "POST",
+      body: formData,
+    });
 
-  if (res.ok) {
-    window.location.href = '/success';
-  } else {
-    alert('Failed to submit report.');
-  }
-};
-
+    if (res.ok) {
+      window.location.href = "/success";
+    } else {
+      alert("Failed to submit report.");
+    }
+  };
 
   return (
     <main className="relative bg-white max-w-sm mx-auto h-screen p-4 font-sans">
-      <h1 className="text-center font-bold text-xl mb-4">Reporting</h1>
+      <h1 className="text-center font-bold text-[1.5rem] mb-4">Reporting</h1>
       <p className="text-center text-sm font-semibold mb-2">
         Provide the Evidence of the Incident
       </p>
@@ -171,27 +169,26 @@ const handleSubmit = async () => {
         {["video", "picture", "audio"].map((t) => (
           <button
             key={t}
-            className={`w-1/3 h-10 m-1 rounded-full flex flex-col items-center justify-center
-             ${
-               tab === t ? "bg-blue-600 text-white" : "bg-blue-200 text-black"
-             }`}
+            className={`w-1/3 h-[42px] m-2 rounded-full flex flex-col items-center justify-center ${
+              tab === t ? "bg-blue-600 text-white" : "bg-blue-200 text-black"
+            }`}
             onClick={() => handleTabChange(t as any)}
           >
-            <img src={`/icons/${t}.png`} alt={t} className="w-6 h-6 mb-1" />
-            <span className="text-xs uppercase">{t}</span>
+            <img src={`/icons/${t}.png`} alt={t} className="w-6 h-[23px] mb-1" />
+            <span className="text-[0.6rem] uppercase">{t}</span>
           </button>
         ))}
       </div>
 
       {/* Media Area */}
-      <div className="bg-gray-50 border border-black rounded-lg p-4 mb-4 min-h-[160px]">
+      <div className="bg-gray-50 border border-black rounded-lg p-4 min-h-[242px] flex flex-col justify-between">
         {!mediaUrl ? (
-          <div>
+          <>
             {tab !== "audio" && (
               <video ref={videoElem} className="w-full mb-2 rounded" />
             )}
             <canvas ref={canvasRef} className="hidden" />
-            <div className="flex justify-center gap-3">
+            <div className="flex justify-center gap-3 mt-auto">
               {isRecording ? (
                 <button
                   onClick={stopRecording}
@@ -219,11 +216,11 @@ const handleSubmit = async () => {
                 />
               </label>
             </div>
-          </div>
+          </>
         ) : (
-          <div>
+          <>
             {tab === "audio" && (
-              <audio controls src={mediaUrl} className="w-full" />
+              <audio controls src={mediaUrl} className="w-full mb-2" />
             )}
             {tab === "video" && (
               <video controls src={mediaUrl} className="w-full mb-2" />
@@ -231,7 +228,7 @@ const handleSubmit = async () => {
             {tab === "picture" && (
               <img src={mediaUrl} alt="pic" className="w-full mb-2 rounded" />
             )}
-            <div className="flex justify-center gap-2">
+            <div className="flex justify-center gap-2 mt-auto">
               <button
                 onClick={deleteMedia}
                 className="bg-gray-500 text-white px-3 py-1 rounded flex items-center gap-1"
@@ -240,13 +237,11 @@ const handleSubmit = async () => {
                 Delete
               </button>
             </div>
-          </div>
+          </>
         )}
       </div>
 
-      <p className="font-semibold text-sm mb-1">
-        Share details of the Incident
-      </p>
+      <p className="font-semibold text-sm my-3">Share details of the Incident</p>
       <textarea
         value={details}
         onChange={(e) => setDetails(e.target.value)}
@@ -256,7 +251,7 @@ const handleSubmit = async () => {
 
       <div className="flex justify-between mb-4 text-xs">
         <select
-          className="border border-blue-500 bg-blue-100 rounded px-2 py-2 w-1/3 text-black mr-1"
+          className="border border-blue-500 bg-blue-100 rounded px-2 py-2 w-1/3 text-black mr-2"
           value={bullyType}
           onChange={(e) => setBullyType(e.target.value)}
         >
@@ -267,7 +262,7 @@ const handleSubmit = async () => {
         </select>
         <input
           type="datetime-local"
-          className="border border-blue-500 bg-blue-100 rounded px-2 py-2 w-1/3 text-black mr-1"
+          className="border border-blue-500 bg-blue-100 rounded px-2 py-2 w-1/3 text-black mr-2"
           value={dateTime}
           onChange={(e) => setDateTime(e.target.value)}
         />
@@ -289,6 +284,7 @@ const handleSubmit = async () => {
         />
         <span className="text-xs font-semibold">Submit Anonymously</span>
       </div>
+
       {!anonymous && (
         <input
           type="text"
